@@ -16,6 +16,18 @@ const resolvers = {
       const token = signToken(user);
       return { user, token };
     },
+    login: async (_, { email, password }) => {
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw AuthenticationError;
+      }
+      const isCorrect = await user.isCorrectPassword(password);
+      if (!isCorrect) {
+        throw AuthenticationError;
+      }
+      const token = signToken(user);
+      return { user, token };
+    },
   },
 };
 

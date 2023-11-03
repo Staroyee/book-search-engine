@@ -26,7 +26,29 @@ const resolvers = {
         throw AuthenticationError;
       }
       const token = signToken(user);
-      return { user, token };
+      return { token, user };
+    },
+    saveBook: async (_, { Book }, context) => {
+      if (context.user) {
+        const updatedUser = await User.findByIdAndUpdate(
+          { _id: context.user._id },
+          { $push: { savedBooks: Book } },
+          { new: true }
+        );
+        return updatedUser;
+      }
+      throw AuthenticationError;
+    },
+    removeBook: async (_, { bookId }, context) => {
+      if (context.user) {
+        const updatedUser = await User.findByIdAndUpdate(
+          { _id: context.user._id },
+          { $pull: { savedBooks: { bookId } } },
+          { new: true }
+        );
+        return updatedUser;
+      }
+      throw AuthenticationError;
     },
   },
 };
